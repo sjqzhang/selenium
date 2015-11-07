@@ -11,6 +11,8 @@ import time
 # Get input to login
 Your_email = raw_input('Enter your Email to Socrative:')
 Your_Socrative_Password = raw_input('Enter your Password to Socrative:')
+#Your_email = 'email@example.com'
+#Your_Socrative_Password = 'password'
 
 class DownloadSocQuiz(unittest.TestCase):
     def setUp(self):
@@ -62,11 +64,20 @@ class DownloadSocQuiz(unittest.TestCase):
         index = 1
         while index < arr_len:
             i = index
-            current_quiz = qSplit[index]
-            print(str(i) + " - " + current_quiz)
+            current_quiz = qSplit[index].rstrip()
             driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div/div/span").click()
-            driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div[2]/button[3]").click()
-            time.sleep(4)
+            driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div[2]/button[4]").click()
+            time.sleep(0.5)
+            SOC_url = driver.current_url
+            SOC_id = SOC_url.split("edit-quiz/")[1].rstrip()
+            print(str(i) + " - " + current_quiz + " - " + SOC_id)
+            time.sleep(0.5)
+            driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
+            time.sleep(0.5)
+            driver.find_element_by_id("my-quizzes-button").click()
+            time.sleep(0.5)
+            driver.find_element_by_id("search-all-button").click()
+
             index += 1
     
     def is_element_present(self, how, what):
