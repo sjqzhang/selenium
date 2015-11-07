@@ -11,8 +11,6 @@ import time
 # Get input to login
 Your_email = raw_input('Enter your Email to Socrative:')
 Your_Socrative_Password = raw_input('Enter your Password to Socrative:')
-#Your_email = 'email@example.com'
-#Your_Socrative_Password = 'password'
 
 class DownloadSocQuiz(unittest.TestCase):
     def setUp(self):
@@ -65,9 +63,9 @@ class DownloadSocQuiz(unittest.TestCase):
         while index < arr_len:
             i = index
             current_quiz = qSplit[index]
+            print(str(i) + " - " + current_quiz)
             driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div/div/span").click()
             driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div[2]/button[3]").click()
-            print(str(i) + " - " + current_quiz)
             time.sleep(4)
             index += 1
     
