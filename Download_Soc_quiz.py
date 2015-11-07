@@ -10,7 +10,7 @@ import time
 
 # Get input to login
 Your_email = raw_input('Enter your Email to Socrative:')
-Your_Socrative_Password = raw_input('Enter your Email to Socrative:')
+Your_Socrative_Password = raw_input('Enter your Password to Socrative:')
 
 class DownloadSocQuiz(unittest.TestCase):
     def setUp(self):
@@ -50,7 +50,7 @@ class DownloadSocQuiz(unittest.TestCase):
         driver.find_element_by_id("teacherLoginPass").send_keys(Your_Socrative_Password)
         driver.find_element_by_id("teacherLoginButton").click()
         print("You are now logged in")
-        driver.find_element_by_xpath("//li[2]/button").click()
+        driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
         driver.find_element_by_id("my-quizzes-button").click()
         driver.find_element_by_id("search-all-button").click()
         all_quizzes = driver.find_element_by_xpath("//div[@id='quiz-list-container']").text
