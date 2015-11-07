@@ -102,13 +102,23 @@
 	<td></td>
 </tr>
 <tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>//li[@id='manage-quizzes-label']/button</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>id=my-quizzes-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>500</td>
 	<td></td>
 </tr>
 <tr>
@@ -162,23 +172,58 @@
 	<td>current_quiz</td>
 </tr>
 <tr>
-	<td>echo</td>
-	<td>${i} - ${current_quiz}</td>
-	<td></td>
-</tr>
-<tr>
 	<td>click</td>
 	<td>//div[@id='quiz-list-container']/div/div[${i}]/div/div/span</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@id='quiz-list-container']/div/div[${i}]/div[2]/button[3]</td>
+	<td>//div[@id='quiz-list-container']/div/div[${i}]/div[2]/button[4]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>pause</td>
-	<td>5000</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeLocation</td>
+	<td>SOC_url</td>
+	<td></td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${SOC_url}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>soc_id = storedVars['SOC_url'].split(&quot;edit-quiz/&quot;)[1]</td>
+	<td>SOC_id</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${i} - ${current_quiz} - ${SOC_id}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//li[@id='manage-quizzes-label']/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=my-quizzes-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=search-all-button</td>
 	<td></td>
 </tr>
 <tr>
