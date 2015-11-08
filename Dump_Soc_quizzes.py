@@ -7,12 +7,14 @@ from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re, os
 import time
 import unicodedata, sys
+import collections
+import json
 
 # Get input to login
-#Your_email = raw_input('Enter your Email to Socrative:')
-#Your_Socrative_Password = raw_input('Enter your Password to Socrative:')
-Your_email = 'tlinnet@gmail.com'
-Your_Socrative_Password = 'xhwo1453Xl'
+Your_email = raw_input('Enter your Email to Socrative:')
+Your_Socrative_Password = raw_input('Enter your Password to Socrative:')
+#Your_email = 'test@example.com'
+#Your_Socrative_Password = '12345678'
 
 # Additional print out
 debug = False
@@ -70,7 +72,7 @@ class DownloadSocQuiz(unittest.TestCase):
         print ""
 
         # Make a quiz dic
-        quiz_dic = {}
+        quiz_dic = collections.OrderedDict()
         indexes = []
 
         while index < arr_len:
@@ -88,7 +90,7 @@ class DownloadSocQuiz(unittest.TestCase):
 
             # Default
             c_attr_list = []
-            quiz_dic[str(i)] = {}
+            quiz_dic[str(i)] = collections.OrderedDict()
             quiz_dic[str(i)]["quiz_name"] = current_quiz
             quiz_dic['nr_of_quizzes'] = i
             count_answers = False
@@ -115,7 +117,7 @@ class DownloadSocQuiz(unittest.TestCase):
                     question_nr = int(c_attr.split("-")[-1])
                     quiz_dic[str(i)]['nr_of_questions'] = question_nr
                     j = question_nr
-                    quiz_dic[str(i)][str(j)] ={}
+                    quiz_dic[str(i)][str(j)] = collections.OrderedDict()
 
                     # Start counting answers and update later
                     quiz_dic[str(i)][str(j)]['nr_of_answers'] = 0
@@ -244,24 +246,7 @@ class DownloadSocQuiz(unittest.TestCase):
                 for temp_print in c_attr_list:
                     print temp_print
 
-            # Print to screen
-            if True:
-            #if False:
-                for i in indexes:
-                    # Print quiz name
-                    print("\n" + str(i) + " - " + quiz_dic[str(i)]["quiz_name"] + " - " + quiz_dic[str(i)]['soc-number-container'])
 
-                    for j in range(1, quiz_dic[str(i)]['nr_of_questions']+1):
-                        qtype = quiz_dic[str(i)][str(j)]['type']
-                        if qtype == "mc-answer":
-                            #continue
-                            print i, j, "mc-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
-                        elif qtype == "fr-answer":
-                            #continue
-                            print i, j, "fr-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
-                        elif qtype == "tf-answer":
-                            #continue
-                            print i, j, "tf-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
 
             driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
             time.sleep(0.5)
@@ -271,6 +256,34 @@ class DownloadSocQuiz(unittest.TestCase):
 
             # Add to index
             index += 1
+
+        quiz_dic['indexes'] = indexes
+
+        # Print to screen
+        if True:
+        #if False:
+            for i in quiz_dic['indexes']:
+                # Print quiz name
+                print("\n" + str(i) + " - " + quiz_dic[str(i)]["quiz_name"] + " - " + quiz_dic[str(i)]['soc-number-container'])
+
+                for j in range(1, quiz_dic[str(i)]['nr_of_questions']+1):
+                    qtype = quiz_dic[str(i)][str(j)]['type']
+                    if qtype == "mc-answer":
+                        #continue
+                        print i, j, "mc-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+                    elif qtype == "fr-answer":
+                        #continue
+                        print i, j, "fr-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+                    elif qtype == "tf-answer":
+                        #continue
+                        print i, j, "tf-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+
+
+        #print json.dumps(dic)
+        print json.dumps(quiz_dic, indent=4)
+        with open(os.getenv("HOME")+os.sep+"Downloads"+os.sep+'Dump_Soc_quizzes.json', 'w') as f:
+            json.dump(quiz_dic, f, indent=4)
+
     
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="https://b.socrative.com/" />
+<link rel="selenium.base" href="https://www.restudy.dk/" />
 <title>sel_m_1</title>
 </head>
 <body>
@@ -13,17 +13,22 @@
 </thead><tbody>
 <tr>
 	<td>store</td>
-	<td>email@example.com</td>
-	<td>Your_email</td>
+	<td>abcd1234</td>
+	<td>Your_Uni_c_username</td>
 </tr>
 <tr>
 	<td>store</td>
-	<td>1234passwd</td>
-	<td>Your_Socrative_Password</td>
+	<td>12345678</td>
+	<td>Your_Uni_c_Password</td>
 </tr>
 <tr>
 	<td>store</td>
-	<td>https://b.socrative.com/</td>
+	<td>https://www.restudy.dk/kemi-c-niveau</td>
+	<td>fag</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>https://www.restudy.dk/</td>
 	<td>url_login</td>
 </tr>
 <tr>
@@ -62,18 +67,33 @@
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>id=teacherLoginName</td>
-	<td>${Your_email}</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>id=teacherLoginPass</td>
-	<td>${Your_Socrative_Password}</td>
+	<td>clickAndWait</td>
+	<td>id=loginBtn</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>id=teacherLoginButton</td>
+	<td>css=img[alt=&quot;reg_login_using_unic&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=user</td>
+	<td>${Your_Uni_c_username}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pass</td>
+	<td>${Your_Uni_c_Password}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=login</td>
 	<td></td>
 </tr>
 <tr>
@@ -107,133 +127,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//li[@id='manage-quizzes-label']/button</td>
+	<td>open</td>
+	<td>${fag}</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>id=my-quizzes-button</td>
-	<td></td>
-</tr>
-<tr>
-	<td>pause</td>
-	<td>500</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=search-all-button</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeText</td>
-	<td>//div[@id='quiz-list-container']</td>
-	<td>all_quizzes</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${all_quizzes}</td>
-	<td></td>
-</tr>
-<tr>
-	<td>getEval</td>
-	<td>qSplit = storedVars['all_quizzes'].split(&quot;Quiz_&quot;)</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>qSplit.length</td>
-	<td>arr_len</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${arr_len}</td>
-	<td></td>
-</tr>
-<tr>
-	<td>getEval</td>
-	<td>index=1;</td>
-	<td></td>
-</tr>
-<tr>
-	<td>while</td>
-	<td>index &lt; ${arr_len};</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>index</td>
-	<td>i</td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>qSplit[index]</td>
-	<td>current_quiz</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@id='quiz-list-container']/div/div[${i}]/div/div/span</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@id='quiz-list-container']/div/div[${i}]/div[2]/button[4]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>pause</td>
-	<td>500</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeLocation</td>
-	<td>SOC_url</td>
+	<td>storeAllLinks</td>
+	<td>page_links</td>
 	<td></td>
 </tr>
 <tr>
 	<td>echo</td>
-	<td>${SOC_url}</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>soc_id = storedVars['SOC_url'].split(&quot;edit-quiz/&quot;)[1]</td>
-	<td>SOC_id</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${i} - ${current_quiz} - ${SOC_id}</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//li[@id='manage-quizzes-label']/button</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=my-quizzes-button</td>
-	<td></td>
-</tr>
-<tr>
-	<td>pause</td>
-	<td>500</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=search-all-button</td>
-	<td></td>
-</tr>
-<tr>
-	<td>getEval</td>
-	<td>index++;</td>
-	<td></td>
-</tr>
-<tr>
-	<td>endWhile</td>
-	<td></td>
+	<td>${page_links}</td>
 	<td></td>
 </tr>
 </tbody></table>

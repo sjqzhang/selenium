@@ -35,4 +35,7 @@ Software depencies
 4. And selenium for python
   * https://pypi.python.org/pypi/selenium
   * pip install -U selenium
-  
+
+5. See also
+  * http://www.guru99.com/locators-in-selenium-ide.html
+  * http://selenium-python.readthedocs.org/locating-elements.html
