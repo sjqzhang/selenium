@@ -83,9 +83,11 @@ class DownloadSocQuiz(unittest.TestCase):
             quiz_dic = {}
             quiz_dic['nr_of_quizzes'] = 0
             count_answers = False
+            c_attr_list = []
 
             for ii in ids:
                 c_attr = ii.get_attribute('id')
+                c_attr_list.append(c_attr)
                 if debug:
                     if c_attr == "roomname":
                         print "-------- ROOM NAME --------\n", ii.tag_name, ii.text, "\n----------------------------"
@@ -107,6 +109,13 @@ class DownloadSocQuiz(unittest.TestCase):
                     quiz_dic[quiz_nr]['quiz_id']= ii.id
                     count_answers = True
                     answer_ids = []
+                    answer_text = []
+                    answer_true = []
+                    if "TrueFalse" in quiz_dic[quiz_nr]['quiz']:
+                        print ii
+                        quiz_dic[quiz_nr]['answer_ids'] = None
+                        quiz_dic[quiz_nr]['nr_of_answers'] = None
+                        quiz_dic[quiz_nr]['type'] = "tf-answer"
 
                 if count_answers:
                     #print c_attr
@@ -116,16 +125,24 @@ class DownloadSocQuiz(unittest.TestCase):
                         answer_ids.append(ii.id)
                         quiz_dic[quiz_nr]['answer_ids'] = answer_ids
                         quiz_dic[quiz_nr]['nr_of_answers'] = int(answer_nr)
-                        quiz_dic[quiz_nr]['type'] = '_'.join(str(x) for x in c_attr_split[:-1])
+                        quiz_dic[quiz_nr]['type'] = '-'.join(str(x) for x in c_attr_split[:-1])
+                        if quiz_dic[quiz_nr]['type'] == 'mc-answer':
+                            answer_text.append(ii.text.encode('utf-8'))
+                            if "is-correct" in ii.get_attribute('class'):
+                                answer_true.append(True)
+                            else:
+                                answer_true.append(False)
+                            quiz_dic[quiz_nr]['answer_true'] = answer_true
+
                     elif c_attr.startswith( 'question-' ) or c_attr.startswith( 'format-toggle-question-' ):
                         count_answers = True
                     else:
                         count_answers = False
 
             for i in range(1, quiz_dic['nr_of_quizzes']+1):
-                print i, quiz_dic[str(i)]['type'], quiz_dic[str(i)]['nr_of_answers'], quiz_dic[str(i)]['answer_ids']
-
-            j = quiz_dic['1']
+                qtype = quiz_dic[str(i)]['type']
+                if qtype == "mc-answer":
+                    print i, quiz_dic[str(i)]['nr_of_answers'], quiz_dic[str(i)]['answer_true']
 
             #driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
             #time.sleep(0.5)
