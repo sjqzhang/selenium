@@ -14,6 +14,7 @@ import unicodedata, sys
 Your_email = 'tlinnet@gmail.com'
 Your_Socrative_Password = 'xhwo1453Xl'
 
+# Additional print out
 debug = False
 
 class DownloadSocQuiz(unittest.TestCase):
@@ -65,9 +66,15 @@ class DownloadSocQuiz(unittest.TestCase):
         #print qSplit
         arr_len = len(qSplit)
         #print(arr_len)
-        index = 13
+        index = 1
         print ""
+
+        # Make a quiz dic
+        quiz_dic = {}
+        indexes = []
+
         while index < arr_len:
+            indexes.append(index)
             i = index
             current_quiz = qSplit[index].rstrip()
             driver.find_element_by_xpath("//div[@id='quiz-list-container']/div/div[" + str(i) + "]/div/div/span").click()
@@ -75,81 +82,194 @@ class DownloadSocQuiz(unittest.TestCase):
             time.sleep(0.5)
             SOC_url = driver.current_url
             SOC_id = SOC_url.split("edit-quiz/")[1].rstrip()
-            print(str(i) + " - " + current_quiz + " - " + SOC_id)
+            #print("\n" + str(i) + " - " + current_quiz + " - " + SOC_id)
             time.sleep(0.5)
             ids = driver.find_elements_by_xpath('//*[@id]')
 
-            # Make a quiz dic
-            quiz_dic = {}
-            quiz_dic['nr_of_quizzes'] = 0
-            count_answers = False
+            # Default
             c_attr_list = []
+            quiz_dic[str(i)] = {}
+            quiz_dic[str(i)]["quiz_name"] = current_quiz
+            quiz_dic['nr_of_quizzes'] = i
+            count_answers = False
 
             for ii in ids:
                 c_attr = ii.get_attribute('id')
                 c_attr_list.append(c_attr)
-                if debug:
-                    if c_attr == "roomname":
+
+                # Get some information
+                if c_attr == "roomname":
+                    quiz_dic[str(i)]['roomname'] = ii.text
+                    if debug:
                         print "-------- ROOM NAME --------\n", ii.tag_name, ii.text, "\n----------------------------"
-                    elif c_attr == "soc-number-container":
+                elif c_attr == "soc-number-container":
+                    quiz_dic[str(i)]['soc-number-container'] = ii.text
+                    if debug:
                         print "-------- SOC number --------\n", ii.tag_name, ii.text, "\n-----------------------------"
-                    elif c_attr == "questions":
-                        #print "-------- all questions --------\n", ii.tag_name, ii.text.translate(unaccented_map()), "\n-----------------------------"
+                elif c_attr == "questions":
+                    if debug:
                         print "-------- all questions --------\n", ii.tag_name, ii.text.encode('utf-8'), "\n-----------------------------"
-                        print type(ii.text)
-                        print unichr(ii.text)
-                # Count number of quizzes
-                #if c_attr.startswith( 'format-toggle-question-' ):
+ 
+                # Count number of questions, and store the quiz, and the id
                 if c_attr.startswith( 'question-' ):
-                    quiz_nr = c_attr.split("-")[-1]
-                    quiz_dic['nr_of_quizzes'] = int(quiz_nr)
-                    quiz_dic[quiz_nr] = {}
-                    quiz_dic[quiz_nr]['nr_of_answers'] = 0
-                    quiz_dic[quiz_nr]['quiz']= ii.text.encode('utf-8')
-                    quiz_dic[quiz_nr]['quiz_id']= ii.id
+                    question_nr = int(c_attr.split("-")[-1])
+                    quiz_dic[str(i)]['nr_of_questions'] = question_nr
+                    j = question_nr
+                    quiz_dic[str(i)][str(j)] ={}
+
+                    # Start counting answers and update later
+                    quiz_dic[str(i)][str(j)]['nr_of_answers'] = 0
+                    quiz_dic[str(i)][str(j)]['quiz_id']= ii.id
+
+                    # Start getting the list of answers to each question
                     count_answers = True
                     answer_ids = []
                     answer_text = []
                     answer_true = []
-                    if "TrueFalse" in quiz_dic[quiz_nr]['quiz']:
-                        print ii
-                        quiz_dic[quiz_nr]['answer_ids'] = None
-                        quiz_dic[quiz_nr]['nr_of_answers'] = None
-                        quiz_dic[quiz_nr]['type'] = "tf-answer"
 
+                    # Get the quiz text
+                    quiz_text = ii.text.encode('utf-8')
+                    quiz_lines = quiz_text.splitlines()
+
+                    is_question = False
+                    is_answers = False
+                    is_TrueFalse = False
+                    is_explanation = False
+
+                    # Collect lines
+                    quiz_question_lines = []
+                    quiz_answers_lines = []
+                    quiz_is_TrueFalse = False
+                    quiz_explanation_lines = []
+
+                    for m in range(len(quiz_lines)):
+                        line = quiz_lines[m]
+                        #print line
+                        if "EDIT" in line:
+                            is_question = True
+                            is_answers = False
+                            is_TrueFalse = False
+                            is_explanation = False
+                            continue
+
+                        elif "ANSWER CHOICE" in line:
+                            is_question = False
+                            is_answers = True
+                            is_TrueFalse = False
+                            is_explanation = False
+                            continue
+
+                        elif "Correct Answer:" in line:
+                            is_question = False
+                            is_answers = False
+                            is_TrueFalse = True
+                            is_explanation = False
+
+                        elif "Explanation:" in line:
+                            is_question = False
+                            is_answers = False
+                            is_TrueFalse = False
+                            is_explanation = True
+                            continue
+
+                        if is_question:
+                            quiz_question_lines.append(line)
+                        elif is_answers:
+                            quiz_answers_lines.append(line)
+                        elif is_TrueFalse:
+                            quiz_is_TrueFalse = True
+                        elif is_explanation:
+                            quiz_explanation_lines.append(line)
+
+                    # Store for quiz and question
+                    quiz_dic[str(i)][str(j)]['quiz_question_lines'] = quiz_question_lines
+                    quiz_dic[str(i)][str(j)]['quiz_answers_lines'] = quiz_answers_lines
+                    quiz_dic[str(i)][str(j)]['quiz_is_TrueFalse'] = quiz_is_TrueFalse
+                    quiz_dic[str(i)][str(j)]['quiz_explanation_lines'] = quiz_explanation_lines
+
+                # Count number of answers, and the True/False value of the statements
                 if count_answers:
-                    #print c_attr
+                    # Get the information
                     if c_attr.startswith( 'mc-answer-' ) or c_attr.startswith( 'fr-answer-'):
                         c_attr_split = c_attr.split("-")
-                        answer_nr =c_attr_split[-1]
+                        answer_nr = int(c_attr_split[-1])
+                        k = answer_nr
+
+                        # Update answer ids
                         answer_ids.append(ii.id)
-                        quiz_dic[quiz_nr]['answer_ids'] = answer_ids
-                        quiz_dic[quiz_nr]['nr_of_answers'] = int(answer_nr)
-                        quiz_dic[quiz_nr]['type'] = '-'.join(str(x) for x in c_attr_split[:-1])
-                        if quiz_dic[quiz_nr]['type'] == 'mc-answer':
+                        quiz_dic[str(i)][str(j)]['answer_ids'] = answer_ids
+                        quiz_dic[str(i)][str(j)]['nr_of_answers'] = k
+                        quiz_dic[str(i)][str(j)]['type'] = '-'.join(str(x) for x in c_attr_split[:-1])
+
+                        # If of type multiple-choice, see if the answer is correct.
+                        if quiz_dic[str(i)][str(j)]['type'] == 'mc-answer':
                             answer_text.append(ii.text.encode('utf-8'))
                             if "is-correct" in ii.get_attribute('class'):
                                 answer_true.append(True)
                             else:
                                 answer_true.append(False)
-                            quiz_dic[quiz_nr]['answer_true'] = answer_true
 
-                    elif c_attr.startswith( 'question-' ) or c_attr.startswith( 'format-toggle-question-' ):
+                            # Store
+                            quiz_dic[str(i)][str(j)]['answer_text'] = answer_text
+                            quiz_dic[str(i)][str(j)]['answer_true'] = answer_true
+
+                        # If of type short-answer, see if the answer is correct.
+                        elif quiz_dic[str(i)][str(j)]['type'] == 'fr-answer':
+                            if len(quiz_explanation_lines) > 0:
+                                correct_answers = re.findall(r'\[(.*?)\]', quiz_explanation_lines[0], re.DOTALL)
+                                if len(correct_answers) > 0:
+                                    quiz_dic[str(i)][str(j)]['answer_true'] = correct_answers[0].split(";")
+                                else:
+                                    quiz_dic[str(i)][str(j)]['answer_true'] = []
+                            else:
+                                quiz_dic[str(i)][str(j)]['answer_true'] = []
+
+                    elif "TrueFalse" in quiz_text:
+                        quiz_dic[str(i)][str(j)]['answer_ids'] = None
+                        quiz_dic[str(i)][str(j)]['nr_of_answers'] = None
+                        quiz_dic[str(i)][str(j)]['type'] = "tf-answer"
+
+                        correct_answers = re.findall(r'\[(.*?)\]', quiz_explanation_lines[0], re.DOTALL)[0].split(";")
+                        quiz_dic[str(i)][str(j)]['answer_true'] = correct_answers
+                        count_answers = False
+
+                    # Continue counting if meeting other buttons.
+                    elif c_attr.startswith('question-') or c_attr.startswith('format-toggle-question-'):
                         count_answers = True
                     else:
                         count_answers = False
 
-            for i in range(1, quiz_dic['nr_of_quizzes']+1):
-                qtype = quiz_dic[str(i)]['type']
-                if qtype == "mc-answer":
-                    print i, quiz_dic[str(i)]['nr_of_answers'], quiz_dic[str(i)]['answer_true']
+            # Print all xpaths
+            if debug:
+                for temp_print in c_attr_list:
+                    print temp_print
 
-            #driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
-            #time.sleep(0.5)
-            #driver.find_element_by_id("my-quizzes-button").click()
-            #time.sleep(0.5)
-            #driver.find_element_by_id("search-all-button").click()
+            # Print to screen
+            if True:
+            #if False:
+                for i in indexes:
+                    # Print quiz name
+                    print("\n" + str(i) + " - " + quiz_dic[str(i)]["quiz_name"] + " - " + quiz_dic[str(i)]['soc-number-container'])
 
+                    for j in range(1, quiz_dic[str(i)]['nr_of_questions']+1):
+                        qtype = quiz_dic[str(i)][str(j)]['type']
+                        if qtype == "mc-answer":
+                            #continue
+                            print i, j, "mc-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+                        elif qtype == "fr-answer":
+                            #continue
+                            print i, j, "fr-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+                        elif qtype == "tf-answer":
+                            #continue
+                            print i, j, "tf-answer", quiz_dic[str(i)][str(j)]['nr_of_answers'], quiz_dic[str(i)][str(j)]['answer_true']
+
+            driver.find_element_by_xpath("//li[@id='manage-quizzes-label']/button").click()
+            time.sleep(0.5)
+            driver.find_element_by_id("my-quizzes-button").click()
+            time.sleep(0.5)
+            driver.find_element_by_id("search-all-button").click()
+
+            # Add to index
             index += 1
     
     def is_element_present(self, how, what):
@@ -176,50 +296,6 @@ class DownloadSocQuiz(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
         self.assertEqual([], self.verificationErrors)
-
-
-
-
-# Translation dictionary.  Translation entries are added to this dictionary as needed.
-CHAR_REPLACEMENT = {
-    # latin-1 characters that don't have a unicode decomposition
-    0xc5: u"AA", # LATIN CAPITAL LETTER AA
-    0xc6: u"AE", # LATIN CAPITAL LETTER AE
-    0xd0: u"D",  # LATIN CAPITAL LETTER ETH
-    0xd8: u"OE", # LATIN CAPITAL LETTER O WITH STROKE
-    0xde: u"Th", # LATIN CAPITAL LETTER THORN
-    0xdf: u"ss", # LATIN SMALL LETTER SHARP S
-    0xe5: u"aa", # LATIN SMALL LETTER AA
-    0xe6: u"ae", # LATIN SMALL LETTER AE
-    0xf0: u"d",  # LATIN SMALL LETTER ETH
-    0xf8: u"oe", # LATIN SMALL LETTER O WITH STROKE
-    0xfe: u"th", # LATIN SMALL LETTER THORN
-    }
-
-class unaccented_map(dict):
-    # Maps a unicode character code (the key) to a replacement code
-    # (either a character code or a unicode string).
-    def mapchar(self, key):
-        ch = self.get(key)
-        if ch is not None:
-            return ch
-        de = unicodedata.decomposition(unichr(key))
-        if de:
-            try:
-                ch = int(de.split(None, 1)[0], 16)
-            except (IndexError, ValueError):
-                ch = key
-        else:
-            ch = CHAR_REPLACEMENT.get(key, key)
-        self[key] = ch
-        return ch
-    if sys.version >= "2.5":
-        # use __missing__ where available
-        __missing__ = mapchar
-    else:
-        # otherwise, use standard __getitem__ hook (this is slower,
-        # since it's called for each character)
-        __getitem__ = mapchar
 
 if __name__ == "__main__":
     unittest.main()
