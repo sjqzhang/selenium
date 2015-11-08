@@ -5,18 +5,18 @@ Various Selenium IDE or Selenium Python scripts
 Browser automation with socrative.com, restudy.dk and lectio.dk
 ---------------------------------------------------------------
 
-| With socrative.com
-| Download all your quizzes as pdf to your download folder in Home directory
-| Print all SOC-xxxxxxxx for your quizzes
-| Download your quizzes to a text file with questions, answers and True/False for all ticks.
+1. With socrative.com
+  * Download all your quizzes as pdf to your download folder in Home directory
+  * Print all SOC-xxxxxxxx for your quizzes
+  * Download your quizzes to a text file with questions, answers and True/False for all ticks.
 
-| With restudy.dk
-| To download and prepare an excel sheet with dropdown boxes to make an upload quizzes excel sheet
-| A script to read the above excel sheet, and create a new quiz automatic
+2. With restudy.dk
+  * To download and prepare an excel sheet with dropdown boxes to make an upload quizzes excel sheet
+  * A script to read the above excel sheet, and create a new quiz automatic
 
-| Planned with lectio.dk
-| Script to fetch student information and store in word document
-| Script to download all documents and subtrees and upload to login.microsoftonline.dk
+3. Planned with lectio.dk
+  * Script to fetch student information and store in word document
+  * Script to download all documents and subtrees and upload to login.microsoftonline.dk
 
 ==================
 Software depencies
