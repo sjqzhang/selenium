@@ -5,7 +5,8 @@ import xlsxwriter
 # From
 # https://xlsxwriter.readthedocs.org/en/latest/example_data_validate.html
 
-workbook = xlsxwriter.Workbook(os.getenv("HOME")+os.sep+"Downloads"+os.sep+'data_validate.xlsx')
+#workbook = xlsxwriter.Workbook(os.getenv("HOME")+os.sep+"Downloads"+os.sep+'make_excel_dropdown.xlsx')
+workbook = xlsxwriter.Workbook(os.getcwd()+os.sep+'make_excel_dropdown.xlsx')
 worksheet = workbook.add_worksheet()
 
 # Add a format for the header cells.

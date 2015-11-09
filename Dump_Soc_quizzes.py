@@ -281,7 +281,9 @@ class DownloadSocQuiz(unittest.TestCase):
 
         #print json.dumps(dic)
         print json.dumps(quiz_dic, indent=4)
-        with open(os.getenv("HOME")+os.sep+"Downloads"+os.sep+'Dump_Soc_quizzes.json', 'w') as f:
+        #with open(os.getenv("HOME")+os.sep+"Downloads"+os.sep+'Dump_Soc_quizzes.json', 'w') as f:
+        #    json.dump(quiz_dic, f, indent=4)
+        with open(os.getcwd()+os.sep+'Dump_Soc_quizzes.json', 'w') as f:
             json.dump(quiz_dic, f, indent=4)
 
     
